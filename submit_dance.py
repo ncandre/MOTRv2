@@ -139,7 +139,7 @@ class Detector(object):
             bbox_xyxy = dt_instances.boxes.tolist()
             identities = dt_instances.obj_idxes.tolist()
 
-            save_format = '{frame},{id},{x1:.2f},{y1:.2f},{w:.2f},{h:.2f},1,-1,-1,-1\n'
+            save_format = '{frame} {id} {x1:.2f} {y1:.2f} {w:.2f} {h:.2f} 1 -1 -1 -1\n'
             for xyxy, track_id in zip(bbox_xyxy, identities):
                 if track_id < 0 or track_id is None:
                     continue
@@ -207,5 +207,6 @@ if __name__ == '__main__':
     vids = vids[rank::ws]
 
     for vid in vids:
+        print("DOING :",vid)
         det = Detector(args, model=detr, vid=vid)
         det.detect(args.score_threshold)

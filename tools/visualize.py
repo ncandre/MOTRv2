@@ -15,7 +15,7 @@ from tqdm import tqdm
 def get_color(i):
     return [(i * 23 * j + 43) % 255 for j in range(3)]
 
-with open("/data/Dataset/mot/det_db_oc_sort.json") as f:
+with open("/data/stot/datasets_mot/det_db_motrv2.json") as f:
     det_db = json.load(f)
 
 def process(trk_path, img_list, output="output.mp4"):
@@ -64,8 +64,8 @@ if __name__ == '__main__':
         print(seq)
 
         trk_path = "exps/motrv2_noqd/run1/tracker/" + seq
-        # trk_path = "/data/Dataset/mot/DanceTrack/val/dancetrack0010/gt/gt.txt"
+        # trk_path = "/data/stot/datasets_mot/DanceTrack/val/DanceTrack0010/gt/gt.txt"
 
-        img_list = glob(f"/data/Dataset/mot/DanceTrack/val/{seq[:-4]}/img1/*.jpg")
+        img_list = glob(f"/data/stot/datasets_mot/DanceTrack/val/{seq[:-4]}/img1/*.jpg")
         process(trk_path, img_list, f'motr_trainval_demo/{seq[:-4]}.mp4')
         break
