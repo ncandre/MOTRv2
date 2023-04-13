@@ -12,6 +12,7 @@ from copy import deepcopy
 import json
 
 import os
+import sys
 import argparse
 import torchvision.transforms.functional as F
 import torch
@@ -25,13 +26,30 @@ from main import get_args_parser
 from motmodels.structures import Instances
 from torch.utils.data import Dataset, DataLoader
 
-
+class YOLOv5():
+    def __init__(self, repo = 'ultralytics/yolov5', variation = 'yolov5s', device = "cpu", verbose=False):
+        self.model = torch.hub.load(repo, variation, device = device, _verbose = verbose)
+        
+    def infer(self, img):
+        results = self.model(img).xywhn[0] #xcenter, ycenter, width, height (normalized)
+        
+        visdrone_classes = [2, 3, 5, 7]
+        
+        try:
+            # visdrone_results = results[torch.where(results[:, -1] == 115)]
+            # print(visdrone_results)
+            visdrone_results = torch.stack([res for res in results if res[-1] in visdrone_classes])
+            det_results = visdrone_results[:, :-1]            
+        except:
+            det_results = torch.empty((0,5))
+        
+                
+        return det_results
+    
 class ListImgDataset(Dataset):
-    def __init__(self, mot_path, img_list, det_db) -> None:
+    def __init__(self, img_list, detector) -> None:
         super().__init__()
-        self.mot_path = mot_path
         self.img_list = img_list
-        self.det_db = det_db
 
         '''
         common settings
@@ -40,21 +58,19 @@ class ListImgDataset(Dataset):
         self.img_width = 1536
         self.mean = [0.485, 0.456, 0.406]
         self.std = [0.229, 0.224, 0.225]
+        
+        self.detector = detector
 
     def load_img_from_file(self, f_path):
-        cur_img = cv2.imread(os.path.join(self.mot_path, f_path))
+        cur_img = cv2.imread(f_path)
         assert cur_img is not None, f_path
         cur_img = cv2.cvtColor(cur_img, cv2.COLOR_BGR2RGB)
         proposals = []
         im_h, im_w = cur_img.shape[:2]
-        for line in self.det_db[f_path[:-4] + '.txt']:
-            l, t, w, h, s = list(map(float, line.split(',')))
-            proposals.append([(l + w / 2) / im_w,
-                                (t + h / 2) / im_h,
-                                w / im_w,
-                                h / im_h,
-                                s])
-        return cur_img, torch.as_tensor(proposals).reshape(-1, 5)
+
+        proposals = self.detector.infer(cur_img)
+        
+        return cur_img, proposals
 
     def init_img(self, img, proposals):
         ori_img = img.copy()
@@ -77,20 +93,23 @@ class ListImgDataset(Dataset):
         return self.init_img(img, proposals)
 
 
-class Detector(object):
-    def __init__(self, args, model, vid):
+class Tracker(object):
+    def __init__(self, args, model, vid, output_path, detector):
         self.args = args
         self.detr = model
+        
+        self.detector = detector
 
         self.vid = vid
+        
         self.seq_num = os.path.basename(vid)
-        img_list = os.listdir(os.path.join(self.args.mot_path, vid, 'img1'))
-        img_list = [os.path.join(vid, 'img1', i) for i in img_list if 'jpg' in i]
 
+        img_list = [os.path.join(vid, img) for img in os.listdir(vid) if not os.path.isdir(os.path.join(vid, img))]
         self.img_list = sorted(img_list)
         self.img_len = len(self.img_list)
 
-        self.predict_path = os.path.join(self.args.output_dir, args.exp_name)
+        self.predict_path = os.path.join(output_path, args.exp_name)
+        
         os.makedirs(self.predict_path, exist_ok=True)
 
     @staticmethod
@@ -111,9 +130,7 @@ class Detector(object):
         total_occlusion_dts = 0
 
         track_instances = None
-        with open(os.path.join(self.args.mot_path, self.args.det_db)) as f:
-            det_db = json.load(f)
-        loader = DataLoader(ListImgDataset(self.args.mot_path, self.img_list, det_db), 1, num_workers=2)
+        loader = DataLoader(ListImgDataset(self.img_list, self.detector), 1, num_workers=2)
         lines = []
         for i, data in enumerate(tqdm(loader)):
             cur_img, ori_img, proposals = [d[0] for d in data]
@@ -185,31 +202,26 @@ if __name__ == '__main__':
     parser.add_argument('--score_threshold', default=0.5, type=float)
     parser.add_argument('--update_score_threshold', default=0.5, type=float)
     parser.add_argument('--miss_tolerance', default=20, type=int)
+    parser.add_argument('-i', '--input_path', type=str)
+    parser.add_argument('-o', '--output_path', type=str)
     args = parser.parse_args()
     if args.output_dir:
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
+    
+    torch.multiprocessing.set_start_method("spawn")    
+    sys.path.append("./yolov5") 
 
     # load model and weights
     detr, _, _ = build_model(args)
     detr.track_embed.score_thr = args.update_score_threshold
     detr.track_base = RuntimeTrackerBase(args.score_threshold, args.score_threshold, args.miss_tolerance)
-    checkpoint = torch.load(args.resume, map_location='cpu')
     detr = load_model(detr, args.resume)
     detr.eval()
     detr = detr.cuda()
 
-    # '''for MOT17 submit''' 
-    sub_dir = 'DanceTrack/test'
-    seq_nums = os.listdir(os.path.join(args.mot_path, sub_dir))
-    if 'seqmap' in seq_nums:
-        seq_nums.remove('seqmap')
-    vids = [os.path.join(sub_dir, seq) for seq in seq_nums]
-
-    rank = int(os.environ.get('RLAUNCH_REPLICA', '0'))
-    ws = int(os.environ.get('RLAUNCH_REPLICA_TOTAL', '1'))
-    vids = vids[rank::ws]
-
-    for vid in vids[:1]:
-        print("DOING :",vid)
-        det = Detector(args, model=detr, vid=vid)
-        det.detect(args.score_threshold)
+    input_path, output_path = args.input_path, args.output_path
+    
+    yolo = YOLOv5(device = "cpu")
+    
+    det = Tracker(args, model=detr, vid=input_path, output_path=output_path, detector = yolo)
+    det.detect(args.score_threshold)

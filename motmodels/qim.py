@@ -7,7 +7,7 @@ import torch
 from torch import nn
 
 from util import box_ops
-from models.structures import Boxes, Instances, pairwise_iou
+from motmodels.structures import Boxes, Instances, pairwise_iou
 
 
 def random_drop_tracks(track_instances: Instances, drop_probability: float) -> Instances:

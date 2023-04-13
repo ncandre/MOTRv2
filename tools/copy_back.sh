@@ -6,5 +6,5 @@
 set -x
 
 cp $1/*.py .
-cp $1/models/*.py models
+cp $1/motmodels/*.py motmodels
 cp $1/datasets/*.py datasets

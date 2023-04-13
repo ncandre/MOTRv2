@@ -1,5 +1,5 @@
 --meta_arch motr
---dataset_file e2e_dance
+--dataset_file e2e_visdrone
 --epoch 5
 --with_box_refine
 --lr_drop 4

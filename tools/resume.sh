@@ -20,7 +20,7 @@ rmpyc() {
 cleanup() {
   echo "Packing source code"
   rmpyc
-  # tar -zcf models datasets util main.py engine.py eval.py submit.py --remove-files
+  # tar -zcf motmodels datasets util main.py engine.py eval.py submit.py --remove-files
   echo " ...Done"
 }
 

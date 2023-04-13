@@ -9,13 +9,13 @@ train_output := $(mkfile_dir)trainings/
 build:
 	docker buildx build -t motrv2:tmp --target=final-form .
 	docker run --gpus all -v $(mkfile_dir):/motrv2 --name tmp_container_motrv2 motrv2:tmp \
-		-c "python /motrv2/models/ops/setup.py build --build-base=models/ops/ install"
+		-c "python /motrv2/motmodels/ops/setup.py build --build-base=motmodels/ops/ install"
 	docker commit tmp_container_motrv2 motrv2:dev
 	docker rm tmp_container_motrv2
 
 run:
 	docker run --rm -it --entrypoint zsh -v $(HOME):$(HOME) -v /data:/data --ipc=host \
-		--workdir=$(mkfile_dir) --gpus device=3 -p 6565:6565 motrv2:dev
+		--workdir=$(mkfile_dir) --gpus device=3 motrv2:dev
 
 launch-jupyter:
 	jupyter-notebook --allow-root --ip 0.0.0.0 --port 6565

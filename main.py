@@ -15,6 +15,7 @@ import datetime
 import random
 import time
 from pathlib import Path
+import sys
 
 import numpy as np
 import torch
@@ -25,7 +26,7 @@ import util.misc as utils
 import datasets.samplers as samplers
 from datasets import build_dataset
 from engine import train_one_epoch_mot
-from models import build_model
+from motmodels import build_model
 
 
 def get_args_parser():
@@ -181,6 +182,8 @@ def get_args_parser():
 
 
 def main(args):
+    sys.path.append("..")
+    
     utils.init_distributed_mode(args)
     print("git:\n  {}\n".format(utils.get_sha()))
 

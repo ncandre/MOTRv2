@@ -41,6 +41,7 @@ class DetMOTDetection:
         self.sample_interval = args.sample_interval
         self.video_dict = {}
         self.mot_path = args.mot_path
+        print(mot_path)
 
         self.labels_full = defaultdict(lambda : defaultdict(list))
         def add_mot_folder(split_dir):

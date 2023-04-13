@@ -17,7 +17,7 @@ from scipy.optimize import linear_sum_assignment
 from torch import nn
 
 from util.box_ops import box_cxcywh_to_xyxy, generalized_box_iou
-from models.structures import Instances
+from motmodels.structures import Instances
 
 
 class HungarianMatcher(nn.Module):

@@ -1,0 +1,87 @@
+2023-04-06 08:59:32.854 | INFO     | __main__:main:157 - Args: Namespace(batch_size=32, ckpt='ocsort_dance_model.pth.tar', conf=0.05, devices=None, dist_backend='nccl', dist_url=None, exp_file='exps/example/mot/yolox_x_mix_det.py', experiment_name=None, fp16=True, fuse=True, local_rank=0, machine_rank=0, match_thresh=0.9, min_box_area=100, name=None, nms=0.7, num_machines=1, opts=[], pathname='/data/stot/datasets_mot/fmv/frames/S0103/0001.png', seed=None, speed=False, test=False, track_buffer=30, track_thresh=0.4, trt=False, tsize=None)
+2023-04-06 08:59:32.855 | ERROR    | yolox.core.launch:launch:90 - An error has been caught in function 'launch', process 'MainProcess' (631), thread 'MainThread' (140153080013312):
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.7/runpy.py", line 193, in _run_module_as_main
+    "__main__", mod_spec)
+                └ ModuleSpec(name='tools.yolo_detect', loader=<_frozen_importlib_external.SourceFileLoader object at 0x7f77ed6a6c88>, origin='/...
+  File "/usr/local/lib/python3.7/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+         │     └ {'__name__': '__main__', '__doc__': None, '__package__': 'tools', '__loader__': <_frozen_importlib_external.SourceFileLoader ...
+         └ <code object <module> at 0x7f77ee724300, file "/home/nathan.candre/MOTRv2/tools/yolo_detect.py", line 1>
+
+  File "/home/nathan.candre/MOTRv2/tools/yolo_detect.py", line 239, in <module>
+    args=(None, args, num_gpu),
+                │     └ 1
+                └ Namespace(batch_size=32, ckpt='ocsort_dance_model.pth.tar', conf=0.05, devices=None, dist_backend='nccl', dist_url=None, exp_...
+
+> File "/home/nathan.candre/MOTRv2/yolox/core/launch.py", line 90, in launch
+    main_func(*args)
+    │          └ (None, Namespace(batch_size=32, ckpt='ocsort_dance_model.pth.tar', conf=0.05, devices=None, dist_backend='nccl', dist_url=Non...
+    └ <function main at 0x7f74c667cf28>
+
+  File "/home/nathan.candre/MOTRv2/tools/yolo_detect.py", line 160, in main
+    exp.test_conf = args.conf
+    │               │    └ 0.05
+    │               └ Namespace(batch_size=32, ckpt='ocsort_dance_model.pth.tar', conf=0.05, devices=None, dist_backend='nccl', dist_url=None, exp_...
+    └ None
+
+AttributeError: 'NoneType' object has no attribute 'test_conf'
+2023-04-06 08:59:53.427 | INFO     | __main__:main:157 - Args: Namespace(batch_size=32, ckpt='ocsort_dance_model.pth.tar', conf=0.05, devices=None, dist_backend='nccl', dist_url=None, exp_file='exps/example/mot/yolox_x_mix_det.py', experiment_name=None, fp16=True, fuse=True, local_rank=0, machine_rank=0, match_thresh=0.9, min_box_area=100, name=None, nms=0.7, num_machines=1, opts=[], pathname='/data/stot/datasets_mot/fmv/frames/S0103/0001.png', seed=None, speed=False, test=False, track_buffer=30, track_thresh=0.4, trt=False, tsize=None)
+2023-04-06 08:59:53.428 | ERROR    | yolox.core.launch:launch:90 - An error has been caught in function 'launch', process 'MainProcess' (723), thread 'MainThread' (140458375209472):
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.7/runpy.py", line 193, in _run_module_as_main
+    "__main__", mod_spec)
+                └ ModuleSpec(name='tools.yolo_detect', loader=<_frozen_importlib_external.SourceFileLoader object at 0x7fbf026d6c88>, origin='/...
+  File "/usr/local/lib/python3.7/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+         │     └ {'__name__': '__main__', '__doc__': None, '__package__': 'tools', '__loader__': <_frozen_importlib_external.SourceFileLoader ...
+         └ <code object <module> at 0x7fbf03754300, file "/home/nathan.candre/MOTRv2/tools/yolo_detect.py", line 1>
+
+  File "/home/nathan.candre/MOTRv2/tools/yolo_detect.py", line 239, in <module>
+    args=(None, args, num_gpu),
+                │     └ 1
+                └ Namespace(batch_size=32, ckpt='ocsort_dance_model.pth.tar', conf=0.05, devices=None, dist_backend='nccl', dist_url=None, exp_...
+
+> File "/home/nathan.candre/MOTRv2/yolox/core/launch.py", line 90, in launch
+    main_func(*args)
+    │          └ (None, Namespace(batch_size=32, ckpt='ocsort_dance_model.pth.tar', conf=0.05, devices=None, dist_backend='nccl', dist_url=Non...
+    └ <function main at 0x7fbbdb6abf28>
+
+  File "/home/nathan.candre/MOTRv2/tools/yolo_detect.py", line 160, in main
+    exp.test_conf = args.conf
+    │               │    └ 0.05
+    │               └ Namespace(batch_size=32, ckpt='ocsort_dance_model.pth.tar', conf=0.05, devices=None, dist_backend='nccl', dist_url=None, exp_...
+    └ None
+
+AttributeError: 'NoneType' object has no attribute 'test_conf'
+2023-04-06 09:07:01.446 | INFO     | __main__:main:157 - Args: Namespace(batch_size=32, ckpt='ocsort_dance_model.pth.tar', conf=0.05, devices=None, dist_backend='nccl', dist_url=None, exp_file='exps/example/mot/yolox_x_mix_det.py', experiment_name=None, fp16=True, fuse=True, local_rank=0, machine_rank=0, match_thresh=0.9, min_box_area=100, name=None, nms=0.7, num_machines=1, opts=[], pathname='/data/stot/datasets_mot/fmv/frames/S0103/0001.png', seed=None, speed=False, test=False, track_buffer=30, track_thresh=0.4, trt=False, tsize=None)
+2023-04-06 09:07:01.447 | ERROR    | yolox.core.launch:launch:90 - An error has been caught in function 'launch', process 'MainProcess' (813), thread 'MainThread' (140415446372864):
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.7/runpy.py", line 193, in _run_module_as_main
+    "__main__", mod_spec)
+                └ ModuleSpec(name='tools.yolo_detect', loader=<_frozen_importlib_external.SourceFileLoader object at 0x7fb503ab5c88>, origin='/...
+  File "/usr/local/lib/python3.7/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+         │     └ {'__name__': '__main__', '__doc__': None, '__package__': 'tools', '__loader__': <_frozen_importlib_external.SourceFileLoader ...
+         └ <code object <module> at 0x7fb504b33300, file "/home/nathan.candre/MOTRv2/tools/yolo_detect.py", line 1>
+
+  File "/home/nathan.candre/MOTRv2/tools/yolo_detect.py", line 239, in <module>
+    args=(None, args, num_gpu),
+                │     └ 1
+                └ Namespace(batch_size=32, ckpt='ocsort_dance_model.pth.tar', conf=0.05, devices=None, dist_backend='nccl', dist_url=None, exp_...
+
+> File "/home/nathan.candre/MOTRv2/yolox/core/launch.py", line 90, in launch
+    main_func(*args)
+    │          └ (None, Namespace(batch_size=32, ckpt='ocsort_dance_model.pth.tar', conf=0.05, devices=None, dist_backend='nccl', dist_url=Non...
+    └ <function main at 0x7fb1dca8bf28>
+
+  File "/home/nathan.candre/MOTRv2/tools/yolo_detect.py", line 160, in main
+    exp.test_conf = args.conf
+    │               │    └ 0.05
+    │               └ Namespace(batch_size=32, ckpt='ocsort_dance_model.pth.tar', conf=0.05, devices=None, dist_backend='nccl', dist_url=None, exp_...
+    └ None
+
+AttributeError: 'NoneType' object has no attribute 'test_conf'

@@ -20,7 +20,7 @@ import os.path as osp
 from PIL import Image, ImageDraw
 import copy
 import datasets.transforms as T
-from models.structures import Instances
+from motmodels.structures import Instances
 
 
 class DetMOTDetection:

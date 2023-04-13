@@ -11,7 +11,7 @@
 
 import torch
 from functools import partial
-from models.structures import Instances
+from motmodels.structures import Instances
 
 def to_cuda(samples, targets, device):
     samples = samples.to(device, non_blocking=True)

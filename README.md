@@ -60,7 +60,7 @@ The codebase is built on top of [Deformable DETR](https://github.com/fundamental
 
 * Build MultiScaleDeformableAttention
     ```bash
-    cd ./models/ops
+    cd ./motmodels/ops
     sh ./make.sh
     ```
 

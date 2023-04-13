@@ -91,6 +91,6 @@ RUN --mount=type=cache,target=/var/cache/apt,id=apt-cache --mount=type=cache,tar
 # RUN --mount=type=ssh \
 #     --mount=type=cache,target=/root/.cache,id=user-cache \
 #     --mount=src=./,target=/MOTRv2 \
-#     python /MOTRv2/models/ops/setup.py build --build-base=models/ops/ install
+#     python /MOTRv2/motmodels/ops/setup.py build --build-base=motmodels/ops/ install
 
 ENTRYPOINT ["zsh"]

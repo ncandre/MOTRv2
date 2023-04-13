@@ -24,7 +24,7 @@ from util.misc import (NestedTensor, nested_tensor_from_tensor_list,
                        accuracy, get_world_size, interpolate, get_rank,
                        is_dist_avail_and_initialized, inverse_sigmoid)
 
-from models.structures import Instances, Boxes, pairwise_iou, matched_boxlist_iou
+from motmodels.structures import Instances, Boxes, pairwise_iou, matched_boxlist_iou
 
 from .backbone import build_backbone
 from .matcher import build_matcher
