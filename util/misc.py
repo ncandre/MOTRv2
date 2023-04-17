@@ -415,7 +415,6 @@ def init_distributed_mode(args):
         args.gpu = int(os.environ['LOCAL_RANK'])
         args.dist_url = 'env://'
         os.environ['LOCAL_SIZE'] = str(torch.cuda.device_count())
-        print("INIT DISTRIBUTED MODE :", args.rank, args.world_size, args.gpu, args.dist_url, os.environ['LOCAL_SIZE'])
     elif 'SLURM_PROCID' in os.environ:
         proc_id = int(os.environ['SLURM_PROCID'])
         ntasks = int(os.environ['SLURM_NTASKS'])
@@ -505,3 +504,8 @@ def inverse_sigmoid(x, eps=1e-5):
     x2 = (1 - x).clamp(min=eps)
     return torch.log(x1/x2)
 
+def cprint(*text):
+    print('\033[93m')
+    print(*text)
+    print('\033[0m')
+    

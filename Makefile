@@ -15,7 +15,7 @@ build:
 
 run:
 	docker run --rm -it --entrypoint zsh -v $(HOME):$(HOME) -v /data:/data --ipc=host \
-		--workdir=$(mkfile_dir) --gpus device=3 motrv2:dev
+		--workdir=$(mkfile_dir) --gpus device=0 motrv2:dev
 
 launch-jupyter:
 	jupyter-notebook --allow-root --ip 0.0.0.0 --port 6565

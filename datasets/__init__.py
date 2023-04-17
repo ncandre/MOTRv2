@@ -19,5 +19,5 @@ def build_dataset(image_set, args):
     if args.dataset_file == 'e2e_dance':
         return build_e2e_dance(image_set, args)
     if args.dataset_file == 'e2e_visdrone':
-        return build_e2e_visdrone()
+        return build_e2e_visdrone(image_set, args)
     raise ValueError(f'dataset {args.dataset_file} not supported')

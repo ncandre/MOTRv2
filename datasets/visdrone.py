@@ -26,7 +26,7 @@ import datasets.transforms as T
 from motmodels.structures import Instances
 
 from random import choice, randint
-
+from util.misc import cprint
 
 def is_crowd(ann):
     return 'extra' in ann and 'ignore' in ann['extra'] and ann['extra']['ignore'] == 1
@@ -41,32 +41,23 @@ class DetMOTDetection:
         self.sample_interval = args.sample_interval
         self.video_dict = {}
         self.mot_path = args.mot_path
-        print(mot_path)
-
+        
         self.labels_full = defaultdict(lambda : defaultdict(list))
+        
         def add_mot_folder(split_dir):
             print("Adding", split_dir)
-            for vid in os.listdir(os.path.join(self.mot_path, split_dir)):
-                if 'seqmap' == vid:
-                    continue
-                vid = os.path.join(split_dir, vid)
-                if 'DPM' in vid or 'FRCNN' in vid:
-                    print(f'filter {vid}')
-                    continue
-                gt_path = os.path.join(self.mot_path, vid, 'gt', 'gt.txt')
-                for l in open(gt_path):
+            for vid in os.listdir(os.path.join(self.mot_path, split_dir, "sequences")):
+                annotations = os.path.join(self.mot_path, split_dir, "annotations", vid + ".txt")
+                vid = os.path.join(self.mot_path, split_dir, "sequences", vid)
+                
+                for l in open(annotations):
                     t, i, *xywh, mark, label = l.strip().split(',')[:8]
                     t, i, mark, label = map(int, (t, i, mark, label))
-                    if mark == 0:
-                        continue
-                    if label in [3, 4, 5, 6, 9, 10, 11]:  # Non-person
-                        continue
-                    else:
-                        crowd = False
                     x, y, w, h = map(float, (xywh))
+                    crowd = False
                     self.labels_full[vid][t].append([x, y, w, h, i, crowd])
 
-        add_mot_folder("DanceTrack/train")
+        add_mot_folder("visdrone/MOT/train")
         vid_files = list(self.labels_full.keys())
 
         self.indices = []
@@ -101,7 +92,7 @@ class DetMOTDetection:
                 self.det_db = json.load(f)
         else:
             self.det_db = defaultdict(list)
-
+        
     def set_epoch(self, epoch):
         self.current_epoch = epoch
         if self.sampler_steps is None or len(self.sampler_steps) == 0:
@@ -160,7 +151,7 @@ class DetMOTDetection:
         return rs([img], [target])
 
     def _pre_single_frame(self, vid, idx: int):
-        img_path = os.path.join(self.mot_path, vid, 'img1', f'{idx:08d}.jpg')
+        img_path = os.path.join(self.mot_path, vid, f'{idx:07d}.jpg')
         img = Image.open(img_path)
         targets = {}
         w, h = img._size
@@ -183,7 +174,12 @@ class DetMOTDetection:
             targets['labels'].append(0)
             targets['obj_ids'].append(id + obj_idx_offset)
             targets['scores'].append(1.)
-        txt_key = os.path.join(vid, 'img1', f'{idx:08d}.txt')
+        
+        split_vid = vid.split(os.path.sep)
+        split_vid[-2] = "annotations"
+        annotations = os.path.sep.join(split_vid)
+        
+        txt_key = os.path.join(annotations + '.txt')
         for line in self.det_db[txt_key]:
             *box, s = map(float, line.split(','))
             targets['boxes'].append(box)
