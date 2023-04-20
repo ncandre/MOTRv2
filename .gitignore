@@ -8,3 +8,6 @@ build/
 *.mp4
 pretrained/
 tracker/
+*.pt
+yolov5/
+../trackformer/

@@ -5,7 +5,6 @@
 --lr_drop 4
 --lr 2e-4
 --lr_backbone 2e-5
---pretrained /home/nathan.candre/MOTRv2/pretrained/r50_deformable_detr_plus_iterative_bbox_refinement-checkpoint.pth
 --batch_size 1
 --sample_mode random_interval
 --sample_interval 10
@@ -18,5 +17,6 @@
 --query_denoise 0.05
 --num_queries 10
 --append_crowd
---det_db det_db_motrv2.json
+--det_db det_db_visdrone.json
 --use_checkpoint
+--mot_path /data/stot/datasets_mot

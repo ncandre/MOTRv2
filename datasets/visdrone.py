@@ -48,7 +48,7 @@ class DetMOTDetection:
             print("Adding", split_dir)
             for vid in os.listdir(os.path.join(self.mot_path, split_dir, "sequences")):
                 annotations = os.path.join(self.mot_path, split_dir, "annotations", vid + ".txt")
-                vid = os.path.join(self.mot_path, split_dir, "sequences", vid)
+                vid = os.path.join(split_dir, "sequences", vid)
                 
                 for l in open(annotations):
                     t, i, *xywh, mark, label = l.strip().split(',')[:8]
@@ -75,17 +75,6 @@ class DetMOTDetection:
         self.lengths: list = args.sampler_lengths
         print("sampler_steps={} lenghts={}".format(self.sampler_steps, self.lengths))
         self.period_idx = 0
-
-        # crowdhuman
-        self.ch_dir = Path(args.mot_path) / 'crowdhuman'
-        self.ch_indices = []
-        if args.append_crowd:
-            for line in open(self.ch_dir / f"annotation_trainval.odgt"):
-                datum = json.loads(line)
-                boxes = [ann['fbox'] for ann in datum['gtboxes'] if not is_crowd(ann)]
-                self.ch_indices.append((datum['ID'], boxes))
-        # self.ch_indices = self.ch_indices + self.ch_indices
-        print(f"Found {len(self.ch_indices)} images")
 
         if args.det_db:
             with open(os.path.join(args.mot_path, args.det_db)) as f:
@@ -119,37 +108,6 @@ class DetMOTDetection:
         gt_instances.obj_ids = targets['obj_ids']
         return gt_instances
 
-    def load_crowd(self, index):
-        ID, boxes = self.ch_indices[index]
-        boxes = copy.deepcopy(boxes)
-        img = Image.open(self.ch_dir / 'Images' / f'{ID}.jpg')
-
-        w, h = img._size
-        n_gts = len(boxes)
-        scores = [0. for _ in range(len(boxes))]
-        for line in self.det_db[f'crowdhuman/train_image/{ID}.txt']:
-            *box, s = map(float, line.split(','))
-            boxes.append(box)
-            scores.append(s)
-        boxes = torch.tensor(boxes, dtype=torch.float32)
-        areas = boxes[..., 2:].prod(-1)
-        boxes[:, 2:] += boxes[:, :2]
-
-        target = {
-            'boxes': boxes,
-            'scores': torch.as_tensor(scores),
-            'labels': torch.zeros((n_gts, ), dtype=torch.long),
-            'iscrowd': torch.zeros((n_gts, ), dtype=torch.bool),
-            'image_id': torch.tensor([0]),
-            'area': areas,
-            'obj_ids': torch.arange(n_gts),
-            'size': torch.as_tensor([h, w]),
-            'orig_size': torch.as_tensor([h, w]),
-            'dataset': "CrowdHuman",
-        }
-        rs = T.FixedMotRandomShift(self.num_frames_per_batch)
-        return rs([img], [target])
-
     def _pre_single_frame(self, vid, idx: int):
         img_path = os.path.join(self.mot_path, vid, f'{idx:07d}.jpg')
         img = Image.open(img_path)
@@ -179,7 +137,7 @@ class DetMOTDetection:
         split_vid[-2] = "annotations"
         annotations = os.path.sep.join(split_vid)
         
-        txt_key = os.path.join(annotations + '.txt')
+        txt_key = os.path.join(vid, f'{idx:07d}.txt')
         for line in self.det_db[txt_key]:
             *box, s = map(float, line.split(','))
             targets['boxes'].append(box)
@@ -194,7 +152,6 @@ class DetMOTDetection:
         return img, targets
 
     def _get_sample_range(self, start_idx):
-
         # take default sampling method for normal dataset.
         assert self.sample_mode in ['fixed_interval', 'random_interval'], 'invalid sample mode: {}'.format(self.sample_mode)
         if self.sample_mode == 'fixed_interval':
@@ -219,8 +176,6 @@ class DetMOTDetection:
             vid, f_index = self.indices[idx]
             indices = self.sample_indices(vid, f_index)
             images, targets = self.pre_continuous_frames(vid, indices)
-        else:
-            images, targets = self.load_crowd(idx - len(self.indices))
         if self.transform is not None:
             images, targets = self.transform(images, targets)
         gt_instances, proposals = [], []
@@ -239,7 +194,7 @@ class DetMOTDetection:
         }
 
     def __len__(self):
-        return len(self.indices) + len(self.ch_indices)
+        return len(self.indices)
 
 
 class DetMOTDetectionValidation(DetMOTDetection):

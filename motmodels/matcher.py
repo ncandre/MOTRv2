@@ -19,6 +19,7 @@ from torch import nn
 from util.box_ops import box_cxcywh_to_xyxy, generalized_box_iou
 from motmodels.structures import Instances
 
+from util.misc import cprint
 
 class HungarianMatcher(nn.Module):
     """This class computes an assignment between the targets and the predictions of the network
@@ -77,7 +78,7 @@ class HungarianMatcher(nn.Module):
 
             # Also concat the target labels and boxes
             if isinstance(targets[0], Instances):
-                tgt_ids = torch.cat([gt_per_img.labels for gt_per_img in targets])
+                tgt_ids = torch.cat([gt_per_img.labels for gt_per_img in targets]).type(torch.int64)
                 tgt_bbox = torch.cat([gt_per_img.boxes for gt_per_img in targets])
             else:
                 tgt_ids = torch.cat([v["labels"] for v in targets])
