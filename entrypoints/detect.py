@@ -135,6 +135,10 @@ if __name__ == "__main__":
         default=None,
     )
     args = parser.parse_args()
+    
+    args.detect_config = "/home/nathan.candre/platypus/libs/research/research/sota_testing/MOTRv2/configs/detect_and_track_config_valohai_042.yaml"
+    args.video_folder = "/data/stot/datasets_mot/fmv/videos/trucks_pexels-alan-w-6585377.mp4"
+    args.output_dir = "/home/nathan.candre/other/MOTRv2_results/detect"
 
     detect_and_track_conf = DetectAndTrackConfig.overwrite_save_output_dir(
         read_yaml(args.detect_and_track_config), args.output_dir

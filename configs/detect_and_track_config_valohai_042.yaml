@@ -1,0 +1,62 @@
+detection:
+  extended_model_path: /valohai/inputs/detector/detector.tar.gz
+  score_threshold:
+    default: 0.35
+
+feature_extractor:
+  extended_model_path: /valohai/inputs/classifier/classifier.tar.gz
+
+monitor:
+  output_dir: /valohai/outputs/monitor
+
+nb_frames_skipped: 0
+
+oracle_detection: null
+outputs:
+- name: save_tracks
+  params:
+    geopositioning: true
+    output_dir: /valohai/outputs
+
+tracker:
+  track:
+    name: track_deepsort
+    params:
+      nb_misses_to_delete_tentative: 1
+      freshness_limit: 70
+      nb_matches_to_confirm: 3
+      nb_matches_to_label: 1
+      kalman_output: false
+      kalman_prolongation: 0
+      kalman:
+        scale_with_size: true
+        use_confidence: false
+        # parameters below were inspired by the original deepsort implementation
+        # and seem to work very well
+        P_std_position:
+          bbox_center: 0.1 # 1 / 10
+          bbox_size: 0.1 # 1 / 10
+        P_std_velocity:
+          bbox_center: 0.0625 # 1 / 16
+          bbox_size: 0.0625 # 1 / 16
+        Q_std_position:
+          bbox_center: 0.05 # 1 / 20
+          bbox_size: 0.05 # 1 / 20
+        Q_std_velocity:
+          bbox_center: 0.00625 # 1 / 160
+          bbox_size: 0.00625 # 1 / 160
+        R_std_position:
+          bbox_center: 0.05 # 1 / 20
+          bbox_size: 0.05 # 1 / 20
+      max_features_saved: 50
+  match:
+    name: deepsort_match
+    params:
+      cascade_depth: 70
+      # method to compute the features distance
+      nn_distance_metric: cosine # must be in ["euclidean", "cosine"]
+      max_feature_distance: 0.2
+      gating_threshold: 9.4877
+      max_iou_cost: 0.7
+
+use_multiprocessing: true
