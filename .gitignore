@@ -10,4 +10,3 @@ pretrained/
 tracker/
 *.pt
 yolov5/
-../trackformer/
