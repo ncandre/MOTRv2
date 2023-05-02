@@ -17,6 +17,7 @@
 --query_denoise 0.05
 --num_queries 10
 --append_crowd
---det_db det_db_visdrone.json
+--det_db /data/stot/datasets_mot/det_db_visdrone.json
 --use_checkpoint
 --mot_path /data/stot/datasets_mot
+--output_dir /home/nathan.candre/other/MOTRv2_results

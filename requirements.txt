@@ -10,3 +10,4 @@ filterpy
 motmetrics
 psutil
 seaborn
+cython

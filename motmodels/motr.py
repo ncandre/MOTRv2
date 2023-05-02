@@ -707,6 +707,7 @@ class MOTR(nn.Module):
 
 
 def build(args):
+    #--num_classes
     dataset_to_num_classes = {
         'coco': 91,
         'coco_panoptic': 250,
@@ -714,7 +715,8 @@ def build(args):
         'e2e_dance': 1,
         'e2e_joint': 1,
         'e2e_static_mot': 1,
-        'e2e_visdrone': 5
+        'e2e_visdrone': 1
+        # 'e2e_visdrone': 5
     }
     assert args.dataset_file in dataset_to_num_classes
     num_classes = dataset_to_num_classes[args.dataset_file]

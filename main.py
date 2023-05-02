@@ -181,9 +181,7 @@ def get_args_parser():
     return parser
 
 
-def main(args):
-    sys.path.append("..")
-    
+def main(args):    
     utils.init_distributed_mode(args)
     print("git:\n  {}\n".format(utils.get_sha()))
 

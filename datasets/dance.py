@@ -96,7 +96,7 @@ class DetMOTDetection:
         print(f"Found {len(self.ch_indices)} images")
 
         if args.det_db:
-            with open(os.path.join(args.mot_path, args.det_db)) as f:
+            with open(args.det_db) as f:
                 self.det_db = json.load(f)
         else:
             self.det_db = defaultdict(list)

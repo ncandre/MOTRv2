@@ -77,7 +77,7 @@ class DetMOTDetection:
         self.period_idx = 0
 
         if args.det_db:
-            with open(os.path.join(args.mot_path, args.det_db)) as f:
+            with open(args.det_db) as f:
                 self.det_db = json.load(f)
         else:
             self.det_db = defaultdict(list)
@@ -195,13 +195,6 @@ class DetMOTDetection:
 
     def __len__(self):
         return len(self.indices)
-
-
-class DetMOTDetectionValidation(DetMOTDetection):
-    def __init__(self, args, seqs_folder, transform):
-        args.data_txt_path = args.val_data_txt_path
-        super().__init__(args, seqs_folder, transform)
-
 
 def make_transforms_for_mot17(image_set, args=None):
 
