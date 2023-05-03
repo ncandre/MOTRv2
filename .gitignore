@@ -10,3 +10,6 @@ pretrained/
 tracker/
 *.pt
 yolov5/
+runs/
+tracker/
+tracking_results/
